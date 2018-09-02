@@ -1,7 +1,7 @@
 
 # Layer-based trigger detection
 
-This script allows you to create events driven by trigger collisions.
+This script for Unity3D offers you a new component to allow you to create events driven by trigger collisions.
 
 ## Example
 
@@ -11,26 +11,26 @@ Once done, you can create a new object and add it the following script component
 
 ```cs
 public GameObject detectorObj;
-    
+
 void Start()
 {
     Detector detector = detectorObj.GetComponent<Detector>();
-    
+
     detector.OnTriggerEnter("Default", TestMethod1);
     detector.OnTriggerExit("Enemies", TestMethod2);
     detector.OnTriggerStay("Items", TestMethod3);
 }
-    
+
 void TestMethod1(GameObject intruder)
 {
     ...
 }
-    
+
 void TestMethod2(GameObject intruder)
 {
     ...
 }
-    
+
 void TestMethod3(GameObject intruder)
 {
     ...
@@ -51,7 +51,7 @@ One requirement is that all the listener methods that are added, in this case `T
 // Example
 void MyMethodListener(GameObject gameObject) { ... }
 ```
-    
+
 ## Questions
 
 If you have any questions or doubts about how to use the component, please leave them in the "Issues" section for this repository.
