@@ -1,7 +1,7 @@
 
-# Layer-based trigger detection
+# EMT GameObject detector
 
-This script for Unity3D offers you a new component to allow you to create events driven by trigger collisions.
+With this package for Unity3D offers you a component to detect different game objects based on the layers they are, and attack event listeners to them.
 
 ## Example
 
