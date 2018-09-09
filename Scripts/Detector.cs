@@ -9,8 +9,6 @@ namespace EMT
 
 	public class Detector : MonoBehaviour
 	{
-		public LayerMask playerLayer;
-
 		Dictionary<string, DetectorEvent> layerEnterEvents = new Dictionary<string, DetectorEvent>();
 		Dictionary<string, DetectorEvent> layerExitEvents = new Dictionary<string, DetectorEvent>();
 		Dictionary<string, DetectorEvent> layerStayEvents = new Dictionary<string, DetectorEvent>();
