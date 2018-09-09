@@ -1,4 +1,4 @@
-# Layer-based trigger detection
+# EMT GameObject detector
 
 With this script for Unity3D, you will have a "Detector" component to set up events based on trigger collisions
 
@@ -67,4 +67,4 @@ void MyMethodListener(GameObject gameObject) { ... }
 
 If you have any questions or doubts about how to use the component, please leave them in the "Issues" section for this repository.
 
-Send me an [email](enriquemorenotent@gmail.com) as well.
+Send me an [email](emt.unity3d@gmail.com) as well.
