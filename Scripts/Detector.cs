@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace EMT.Detector
+namespace EMT
 {
 	class DetectorEvent : UnityEvent<GameObject> { }
 
@@ -11,60 +11,117 @@ namespace EMT.Detector
 	{
 		public LayerMask playerLayer;
 
-		Dictionary<string, DetectorEvent> enterEvents = new Dictionary<string, DetectorEvent>();
-		Dictionary<string, DetectorEvent> exitEvents = new Dictionary<string, DetectorEvent>();
-		Dictionary<string, DetectorEvent> stayEvents = new Dictionary<string, DetectorEvent>();
+		Dictionary<string, DetectorEvent> layerEnterEvents = new Dictionary<string, DetectorEvent>();
+		Dictionary<string, DetectorEvent> layerExitEvents = new Dictionary<string, DetectorEvent>();
+		Dictionary<string, DetectorEvent> layerStayEvents = new Dictionary<string, DetectorEvent>();
+
+		Dictionary<string, DetectorEvent> tagEnterEvents = new Dictionary<string, DetectorEvent>();
+		Dictionary<string, DetectorEvent> tagExitEvents = new Dictionary<string, DetectorEvent>();
+		Dictionary<string, DetectorEvent> tagStayEvents = new Dictionary<string, DetectorEvent>();
 
 		//
 		// Unity methods
 		//
 
-		void OnTriggerStay(Collider other)
-		{
-			InvokeListener(this.stayEvents, other);
-		}
-
 		void OnTriggerEnter(Collider other)
 		{
-			InvokeListener(this.enterEvents, other);
+			InvokeEnterListener(other.gameObject);
+		}
+
+		void OnTriggerStay(Collider other)
+		{
+			InvokeStayListener(other.gameObject);
 		}
 
 		void OnTriggerExit(Collider other)
 		{
-			InvokeListener(this.exitEvents, other);
+			InvokeExitListener(other.gameObject);
 		}
 
 		//
 		// API
 		//
 
-		public void OnDetectEnter(string layerName, UnityAction<GameObject> listener)
+		public void OnLayerEnter(string layerName, UnityAction<GameObject> listener)
 		{
-			UpdateListener(this.enterEvents, layerName, listener);
+			UpdateListener(this.layerEnterEvents, layerName, listener);
 		}
 
-		public void OnDetectExit(string layerName, UnityAction<GameObject> listener)
+		public void OnLayerExit(string layerName, UnityAction<GameObject> listener)
 		{
-			UpdateListener(this.exitEvents, layerName, listener);
+			UpdateListener(this.layerExitEvents, layerName, listener);
 		}
 
-		public void OnDetectStay(string layerName, UnityAction<GameObject> listener)
+		public void OnLayerStay(string layerName, UnityAction<GameObject> listener)
 		{
-			UpdateListener(this.stayEvents, layerName, listener);
+			UpdateListener(this.layerStayEvents, layerName, listener);
+		}
+
+
+		public void OnTagEnter(string tagName, UnityAction<GameObject> listener)
+		{
+			UpdateListener(this.tagEnterEvents, tagName, listener);
+		}
+
+		public void OnTagExit(string tagName, UnityAction<GameObject> listener)
+		{
+			UpdateListener(this.tagExitEvents, tagName, listener);
+		}
+
+		public void OnTagStay(string tagName, UnityAction<GameObject> listener)
+		{
+			UpdateListener(this.tagStayEvents, tagName, listener);
 		}
 
 		//
 		// Helpers
 		//
 
-		void InvokeListener(Dictionary<string, DetectorEvent> dict, Collider other)
+		void InvokeEnterListener(GameObject other)
 		{
-			string layerName = GetLayerFor(other.gameObject);
+			string layerName = GetLayerFor(other);
 			DetectorEvent enterEvent;
 
-			if (dict.TryGetValue(layerName, out enterEvent))
+			if (this.layerEnterEvents.TryGetValue(layerName, out enterEvent))
 			{
-				enterEvent.Invoke(other.gameObject);
+				enterEvent.Invoke(other);
+			}
+
+			if (this.tagEnterEvents.TryGetValue(other.tag, out enterEvent))
+			{
+				enterEvent.Invoke(other);
+			}
+		}
+
+		void InvokeStayListener(GameObject other)
+		{
+			string layerName = GetLayerFor(other);
+			DetectorEvent enterEvent;
+
+			if (this.layerStayEvents.TryGetValue(layerName, out enterEvent))
+			{
+				enterEvent.Invoke(other);
+			}
+
+			if (this.tagStayEvents.TryGetValue(other.tag, out enterEvent))
+			{
+				enterEvent.Invoke(other);
+			}
+		}
+
+		void InvokeExitListener(GameObject other)
+		{
+			string layerName = GetLayerFor(other);
+			DetectorEvent enterEvent;
+
+			if (this.layerExitEvents.TryGetValue(layerName, out enterEvent))
+			{
+				enterEvent.Invoke(other);
+			}
+
+			if (this.tagExitEvents.TryGetValue(other.tag, out enterEvent))
+			{
+				enterEvent.Invoke(other);
 			}
 		}
 
@@ -73,11 +130,11 @@ namespace EMT.Detector
 			if (!dict.ContainsKey(key))
 				dict.Add(key, new DetectorEvent());
 
-			DetectorEvent layerEvent;
+			DetectorEvent detectorEvent;
 
-			if (dict.TryGetValue(key, out layerEvent))
+			if (dict.TryGetValue(key, out detectorEvent))
 			{
-				layerEvent.AddListener(listener);
+				detectorEvent.AddListener(listener);
 				return;
 			}
 
@@ -92,21 +149,6 @@ namespace EMT.Detector
 		string GetLayerFor(GameObject gameObject)
 		{
 			return LayerMask.LayerToName(gameObject.layer);
-		}
-
-		//
-		// Test
-		//
-
-		void Start()
-		{
-			this.OnDetectEnter("Default", this.TestMethod);
-			this.OnDetectStay("Water", this.TestMethod);
-		}
-
-		void TestMethod(GameObject go)
-		{
-			Debug.Log(go.name);
 		}
 	}
 }
